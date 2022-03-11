@@ -2,11 +2,7 @@
 
 // Error Check
 function queryDatabase($query){
-    $servername = "localhost";
-    $username = "root";
-    $password = ""; // Unbrakable passowrd here xD
-    $dbname = "secure-app-project";
-    $conn = new mysqli($servername, $username, $password,$dbname);
+    include "connector.php";
     try{
         if ($conn->query($query) === TRUE) {
             logData("Database Query: $query");
@@ -35,6 +31,7 @@ function checkInput($input){
 
 
 function getDetails($sqlQuery){
+    include "connector.php";
     $result = $conn->query($sqlQuery);
     //Catch neferious actions
     try {
@@ -53,8 +50,16 @@ function checkDetails($username, $password) {
 
 }
 
+function generateSalt(){
+    $salt = random_bytes(10);
+    return $salt;
+} // Done
 
-function hashFunction($data, $hash){
+function hashFunction($data, $salt){
+    $hash = $data + $salt;
 
+    //create a hash function here
+
+    return $hash;
 }
 ?>
