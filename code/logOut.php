@@ -1,4 +1,5 @@
 <?php
-    session_destroy();
-    $conn->close();
+    session_start();
+    session_unset();
+    header("Location:../index.php");
 ?>

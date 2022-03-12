@@ -18,9 +18,10 @@
 
 
         <?php 
-            echo $_SESSION["Username"];
-            echo $_SESSION["Password"];
+            echo "Your username is: ". $_SESSION["Username"];
         ?>
+        <br>
+        <br>
         <a href="changePassword.php">Change Password</a> 
         <style>
                 main{

@@ -23,14 +23,14 @@
     <?php
 
         if(isset($_SESSION["Username"])){
-            if($_SESSION["Username"] == "Admin"){
+            if(strcmp($_SESSION["Username"], "ADMIN") == 0){
                 echo '<a href="logs.php">Logs</a>';
             }
-            echo '<a href="logOut.php">Log Out</a><!-- Log out -->';
+            echo '<a href="code/logOut.php">Log Out</a>';
         }else{
             echo '<a href="signIn.php">Sign In</a>';
+            echo '<a href="register.php">Register</a>';
         }
     
-    ?>
-    <a href="register.php">Register</a>    
+    ?>    
 </nav>

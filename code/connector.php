@@ -1,16 +1,11 @@
 <?php
 // Connect to the Database
-$servername = "localhost";
-$username = "root";
-$password = ""; // Unbrakable passowrd here xD
-$dbname = "project";
-$users = "users";
-$logs = "logs";
+include "variables.php";
 $conn = new mysqli($servername, $username, $password);
 if (!$conn) {
   die("No Connection" . $conn->connect_error);
 }
-echo "Successful conneciton <br>";
+// echo "Successful conneciton <br>";
 
 // Create Database if non exists
 try {
@@ -24,11 +19,19 @@ try {
     $query = "CREATE TABLE IF NOT EXISTS $dbname.$logs ( `ID` INT NOT NULL AUTO_INCREMENT , `Username` VARCHAR(1000) NOT NULL , `IP` VARCHAR(1000) NOT NULL, `Access` BOOLEAN NOT NULL DEFAULT FALSE , PRIMARY KEY (`ID`)) ENGINE = InnoDB;";
     if($conn->query($query) === TRUE){
         $salt = generateSalt();
-        $username = hashFunction("ADMIN",$salt);
-        $password = hashFunction("SaD_2021",$salt);
-        $query="INSERT INTO $dbname.$users (`ID`, `Username`, `Password`, `Salt`, `Admin`) VALUES (1, $username, $password, $salt, 'Yes');";
+        $adminUser = "ADMIN";
+        $AdminPass = hashFunction("SaD_2021",$salt);
+        $query="INSERT INTO $dbname.`users` (`ID`, `Username`, `Password`, `Salt`, `Admin`) VALUES (NULL, '$adminUser', '$AdminPass', '$salt', '1');";
         if($conn->query($query) === TRUE){
-            echo "Worked ALL";
+            // echo "
+            // Database Created!
+            // <br>
+            // Just because I trust you very much. I will give you the login and password to the Admin user.
+            // But I trust that you will not use it for any nefarious reasons.
+            // Trust is important.
+            // ID: 'ADMIN'
+            // Password: 'SaD_2021'
+            // ";
         }
     }
 }
