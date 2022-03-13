@@ -42,26 +42,31 @@ function displayAlert($alert){
     echo "<script>alert('$alert')</script>";
 }//DONE
 
-function logInCheck($username, $password){
+function logInCheck($user, $pass){
     include "code/connector.php";
     $query = "SELECT * FROM `users`";
     $query = $conn->query($query);
     if ($query->num_rows > 0){
         while($row = $query->fetch_assoc()){
-            echo "Hello, ";
+            if(strcmp($row['Username'], $user) == 0){
+                if(strcmp($pass,deHashFunction($row['Password'],$row['Salt'])) == 0){
+                    displayAlert("Welcome $user");
+                    $_SESSION['num_login_fail'] = 0;
+                    $_SESSION['Username'] = $user;
+                    header("Location:dashboard.php");
+                }
+                break;
+            }
         }
     }else{
         displayAlert("No Users");
     }
-    
-
-}
+}//DONE
 
 function checkInput($input){
     if($input == ""){
         return FALSE;
     }
-    
     return TRUE;
 }
 
@@ -81,12 +86,11 @@ function getDetails($sqlQuery){
     }
 }
 
-function checkDetails($username, $password) {
-    $data = getDetails("SELECT * FROM `users`");
-}
-
-function changePass() {
-    
+function changePass($user, $newPass) {
+    include "code/connector.php";
+    $query = "SELECT * FROM `users` WHERE `Username` LIKE '$user'";
+    $query = $conn->query($query);
+    $query = "UPDATE `users` SET `Password` = '$newPass' WHERE `users`.`ID` = 2;";
 
     //Log out
     include "logOut.php";
@@ -123,6 +127,7 @@ function generateSalt(){
 
 function deHashFunction($data, $salt){
     //dehash it here - Not Done
+
 
     //Remove Salt by removing teh salt by it's length
     $deSalted = substr($data, strlen($salt));
