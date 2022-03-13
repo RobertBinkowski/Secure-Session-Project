@@ -8,7 +8,7 @@ function queryDatabase($query){
             return $conn->query($query);
           }
     } catch(Throwable $th){
-        logData($th->getMessage(),"SERVER","1");
+        logData($th->getMessage(),"SERVER","0");
     }
 }//DONE
 
@@ -48,6 +48,7 @@ function endTimer(){
 }//Done
 
 function logInCheck($user, $pass){
+    logData("Attempting LogIn",$user, '0');
     include "code/connector.php";
     if(!isset($_SESSION['num_login_fail'])){ // Set if not set
         $_SESSION['num_login_fail'] = 0;
@@ -136,7 +137,7 @@ function changePass($oldPass, $newPass) {
     displayAlert("Password Changed");
     //Log out
     include "logOut.php";
-}
+}//DONE
 
 function showAllLogs() {
     include "connector.php";
@@ -173,5 +174,5 @@ function hashFunction($data, $salt){
     $hash = hash( $hashAlgorithm ,$salt . $data);
 
     return $hash;
-}
+}//DONE
 ?>

@@ -34,5 +34,9 @@ try {
         }
     }
 }
-$conn = mysqli_connect($DBservername, $DBusername, $DBpassword, $DBname);
+$conn = new mysqli($DBservername, $DBusername, $DBpassword, $DBname);
+if (!$conn) {
+    logData($conn->connect_error,"SERVER",'0');
+    die("No Connection" . $conn->connect_error);
+  }
 ?>
