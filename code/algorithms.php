@@ -1,4 +1,4 @@
-<?php 
+<?php
 // Error Check
 function queryDatabase($query){
     include "connector.php";
@@ -34,32 +34,66 @@ function registerUser($username, $password){
     }
     displayAlert("Account - Registered Successfully");
     //Log them in here....
-    $_SESSION["Username"] = $username;
-    header("Location:dashboard.php");
+    header("Location:signIn.php");
 }//DONE
 
 function displayAlert($alert){
     echo "<script>alert('$alert')</script>";
 }//DONE
 
+function endTimer(){
+    sleep(2*60);
+    $_SESSION['num_login_fail'] = 0;
+    displayAlert("Access Restored");
+}//Done
+
 function logInCheck($user, $pass){
     include "code/connector.php";
-    $query = "SELECT * FROM `users`";
-    $query = $conn->query($query);
-    if ($query->num_rows > 0){
-        while($row = $query->fetch_assoc()){
-            if(strcmp($row['Username'], $user) == 0){
-                if(strcmp($pass,deHashFunction($row['Password'],$row['Salt'])) == 0){
-                    displayAlert("Welcome $user");
-                    $_SESSION['num_login_fail'] = 0;
-                    $_SESSION['Username'] = $user;
-                    header("Location:dashboard.php");
-                }
-                break;
-            }
+    if(!isset($_SESSION['num_login_fail'])){ // Set if not set
+        $_SESSION['num_login_fail'] = 0;
+        $_SESSION['last_login_time'] = time();
+    }
+    if($_SESSION['num_login_fail'] >= $maxAttemps){
+        if(time() - $_SESSION['last_login_time'] < 30 ){
+            displayAlert("Still on the time out");
+            endTimer();
+            logData("Login - Timeout - Attempt",$user,'0');
+            die();
         }
-    }else{
-        displayAlert("No Users");
+    }
+    //Log In check
+    if(checkInput($user) == TRUE && checkInput($pass) == TRUE){
+        $query = "SELECT * FROM `users`";
+        $query = $conn->query($query);
+        if ($query->num_rows > 0){
+            while($row = $query->fetch_assoc()){
+                if(strcmp($row['Username'], $user) == 0){
+                    if(strcmp($row['Password'],hashFunction($pass,$row['Salt'])) == 0){
+                        displayAlert("Welcome $user");
+                        $_SESSION['ID'] = $row['ID'];
+                        $_SESSION['num_login_fail'] = 0;
+                        $_SESSION['Username'] = $user;
+                        logData("User Looged In",$user, '1');
+                        header("Location:dashboard.php");
+                    }
+                    break;
+                }
+            }
+        }else{
+            displayAlert("No Users");
+        }
+    }
+    $_SESSION['num_login_fail']++;
+    $_SESSION['last_login_time'] = time();
+    displayAlert("Wrong Details Entered. Username: '$_POST[Username]', Password: '$_POST[Password]'");
+    if($_SESSION['num_login_fail'] >= $maxAttemps){
+        if(time() - $_SESSION['last_login_time'] < 60*60 ){
+            logData("Max attempt reached",$user, '0');
+            displayAlert("Access Blocked for 3 min");
+        }else{
+            // $_SESSION['num_login_fail'] = 0;
+            displayAlert("Access Restored");
+        }
     }
 }//DONE
 
@@ -67,31 +101,39 @@ function checkInput($input){
     if($input == ""){
         return FALSE;
     }
-    return TRUE;
-}
-
-
-function getDetails($sqlQuery){
-    include "connector.php";
-    $result = $conn->query($sqlQuery);
-    //Catch neferious actions
-    try {
-        if ($result->num_rows > 0){
-            return $result;
-        }else{
-            die("Error");
+    $checkArray = ["<",">", "/", "//"];
+    foreach($checkArray as $item){
+        if(strpos($input, $item) == TRUE){
+            return FALSE;
+            die();
         }
-    } catch (Throwable $th) {
-        die("Error");
     }
-}
+    return TRUE;
+}//DONE
 
-function changePass($user, $newPass) {
+function changePass($oldPass, $newPass) {
     include "code/connector.php";
-    $query = "SELECT * FROM `users` WHERE `Username` LIKE '$user'";
+    //Check Input
+    if(checkInput($newPass) == FALSE || checkInput($oldPass) == FALSE){
+        displayAlert("Wrong Input");
+        die();
+    }
+    //Check old pass
+    $id = $_SESSION['ID'];
+    $query = "SELECT * FROM `users` WHERE `ID` = '$id' ";
+    $acc = $conn->query($query)->fetch_assoc();
+    if(!(strcmp($acc['Password'],hashFunction($oldPass, $acc['Salt']) == 0 ))){
+        displayAlert("Wrong Password");
+        die();
+    }
     $query = $conn->query($query);
-    $query = "UPDATE `users` SET `Password` = '$newPass' WHERE `users`.`ID` = 2;";
-
+    $salt = generateSalt();
+    $newPass = hashFunction($newPass,$salt);
+    $query = "UPDATE `users` SET `Password` = '$newPass' WHERE `users`.`ID` = '$id';";
+    $conn->query($query);
+    $query = "UPDATE `users` SET `Salt` = '$salt' WHERE `users`.`ID` = '$id';";
+    $conn->query($query);
+    displayAlert("Password Changed");
     //Log out
     include "logOut.php";
 }
@@ -125,22 +167,10 @@ function generateSalt(){
     return $salt;
 } // Done
 
-function deHashFunction($data, $salt){
-    //dehash it here - Not Done
-
-
-    //Remove Salt by removing teh salt by it's length
-    $deSalted = substr($data, strlen($salt));
-    return $deSalted;
-}
-
 function hashFunction($data, $salt){
+    include "variables.php";
     //First add salt to the password
-    $hash = $salt . $data;
-
-    //create a hash function here
-    //So you can be decripted?
-    //Single Hash Function
+    $hash = hash( $hashAlgorithm ,$salt . $data);
 
     return $hash;
 }

@@ -18,14 +18,11 @@
 
         <form method="POST">
             <label for="oldPass">Old Password:</label><br>
-            <input type="password" passwordrules="required: upper; required: lower; required: digit; 
-                 minlength: 8; allowed: [-().&@?'#,/&quot;+]; max-consecutive: 2" name="oldPass"><br>
+            <input type="password" name="oldPass"><br>
             <label for="newPass">New Password:</label><br>
-            <input type="password" passwordrules="required: upper; required: lower; required: digit; 
-                 minlength: 8; allowed: [-().&@?'#,/&quot;+]; max-consecutive: 2" name="newPass">
+            <input type="password" name="newPass"><br>
             <label for="confPass">Confirm Password:</label><br>
-            <input type="password" passwordrules="required: upper; required: lower; required: digit; 
-                 minlength: 8; allowed: [-().&@?'#,/&quot;+]; max-consecutive: 2" name="confPass"><br>
+            <input type="password" name="confPass"><br>
             <input type="submit" value="Chaneg Password">
         </form>
         <style>
@@ -34,6 +31,16 @@
                     padding-top:5em;
                 }
         </style>
+        <?php
+            include "code/algorithms.php";
+            if($_SERVER["REQUEST_METHOD"] == "POST"){ // Check for post
+                if(strcmp($_POST['newPass'], $_POST['confPass']) == 0){ // Ensure they are the same
+                    changePass($_POST['oldPass'],$_POST['newPass']); //change password
+                }else{
+                    displayAlert("Make sure the new and the old password is the same");
+                }
+            }
+        ?>
     </main>
     <?php include "components/footer.php"; ?>
 

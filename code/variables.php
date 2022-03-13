@@ -1,9 +1,14 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = ""; // Unbrakable passowrd here xD
-$dbname = "project";
-$users = "users";
-$logs = "logs";
+$DBservername = "localhost";
+$DBusername = "root";
+$DBpassword = ""; // Unbrakable passowrd here xD
+$DBname = "project";
 
+//Tables to Create
+$DBusers = "users";
+$DBlogs = "logs";
+
+$maxAttemps = 5;
+
+$hashAlgorithm = "sha256";
 ?>
