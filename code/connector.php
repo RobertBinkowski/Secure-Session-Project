@@ -6,14 +6,15 @@ if (!$conn) {
   die("No Connection" . $conn->connect_error);
 }
 
+$databaseConnection = mysqli_select_db($conn, $DBname);
+
 // Create Database if non exists
-try {
-    $databaseConnection = mysqli_select_db($conn, $DBname);
-}catch(throwable $e){
-    include "algorithms.php";
+if(!$databaseConnection){
     $query = "CREATE DATABASE IF NOT EXISTS $DBname;";
     $conn->query($query);
     $query = "CREATE TABLE IF NOT EXISTS $DBname.$DBusers ( `ID` INT NOT NULL AUTO_INCREMENT , `Username` VARCHAR(1000) NOT NULL , `Password` VARCHAR(1000) NOT NULL , `Salt` VARCHAR(1000) NOT NULL , `Admin` BOOLEAN NOT NULL DEFAULT FALSE , PRIMARY KEY (`ID`)) ENGINE = InnoDB;";
+    $conn->query($query);
+    $query = "ALTER TABLE `users` ADD UNIQUE(`Username`);";
     $conn->query($query);
     $query = "CREATE TABLE IF NOT EXISTS $DBname.$DBlogs ( `ID` INT NOT NULL AUTO_INCREMENT , `Username` VARCHAR(1000) NOT NULL , `IP` VARCHAR(1000) NOT NULL, `Access` BOOLEAN NOT NULL DEFAULT FALSE , PRIMARY KEY (`ID`)) ENGINE = InnoDB;";
     if($conn->query($query) === TRUE){
@@ -34,9 +35,11 @@ try {
         }
     }
 }
+
 $conn = new mysqli($DBservername, $DBusername, $DBpassword, $DBname);
 if (!$conn) {
     logData($conn->connect_error,"SERVER",'0');
     die("No Connection" . $conn->connect_error);
-  }
+}
+
 ?>

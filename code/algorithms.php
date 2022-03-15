@@ -23,6 +23,7 @@ function logData($action, $user, $access){
 }//DONE
 
 function registerUser($username, $password){
+    
     $salt = generateSalt();
     $password = hashFunction($password, $salt) ;
     $query = "INSERT INTO `users` (`ID`, `Username`, `Password`, `Salt`, `Admin`) VALUES (NULL, '$username', '$password', '$salt', '0');";
@@ -48,8 +49,7 @@ function endTimer(){
 }//Done
 
 function logInCheck($user, $pass){
-    logData("Attempting LogIn",$user, '0');
-    include "code/connector.php";
+    include "connector.php";
     if(!isset($_SESSION['num_login_fail'])){ // Set if not set
         $_SESSION['num_login_fail'] = 0;
         $_SESSION['last_login_time'] = time();

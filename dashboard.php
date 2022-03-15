@@ -3,7 +3,6 @@
     if (!isset($_SESSION['Username'])){
         header("Location:signin.php");
     }
-    include "code/connector.php";
 ?>
 <!DOCTYPE html>
 <html>
