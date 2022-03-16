@@ -3,6 +3,13 @@
     if (isset($_SESSION['Username'])){
         header("Location:dashboard.php");
     }
+    if(!isset($_SESSION['failedAttempt'])){
+        $_SESSION['failedAttempt'] = 0;
+        $_SESSION['timer'] = time();
+    }
+    if(!isset($_SESSION['timeOut'])){
+        $_SESSION['timeOut'] = 3*60;
+    }
 ?>
 <!DOCTYPE html>
 <html>
@@ -19,7 +26,18 @@
             <input type="text" name="Username" required><br>
             <label for="Password">Password:</label><br>
             <input type="password" name="Password" required><br>
-            <input type="submit" value="Sign In">
+            <?php 
+                    include "code/variables.php";
+                    echo "<input type='submit'";
+                    
+                    if($_SESSION['failedAttempt'] >= $maxAttemps){
+                        echo " disabled ";
+                    }
+                    if(time() - $_SESSION['timer'] > $_SESSION['timeOut']){
+                        $_SESSION['failedAttempt'] = 0;
+                    }
+                    echo "value='Sign In'>";
+            ?>
         </form>
 
         <style>

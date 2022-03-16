@@ -22,13 +22,9 @@
                 include "code/algorithms.php";
                 if($_SERVER["REQUEST_METHOD"] == "POST"){
                     if(strcmp($_POST['Password'], $_POST['repeatPassword']) != 0){
-                        echo "ERROR!! -Make sure Password and Repeat Password is the same";
+                        echo "ERROR!! - Make sure Password and Repeat Password is the same";
                     }else{
-                        if(checkInput($_POST['Username']) == TRUE && checkInput($_POST['Password']) == TRUE){
-                            registerUser($_POST['Username'],$_POST['Password']);
-                        }else{
-                            displayAlert("Please make sure you satisfy the requirements");
-                        }
+                        registerUser($_POST['Username'],$_POST['Password']);
                     }
                 }
             ?>

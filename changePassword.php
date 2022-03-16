@@ -4,6 +4,13 @@
         header("Location:signin.php");
     }
     include "code/connector.php";
+    if(time() - $_SESSION['oneHourTimeOut'] == 60*60){
+        header("Location:code/logOut.php");
+    }
+    $_SESSION['timeOut'] = time(); // 10 min
+    if(time() - $_SESSION['timeOut'] == 10*60){
+        header("Location:code/logOut.php");
+    }
 ?>
 <!DOCTYPE html>
 <html>
@@ -33,11 +40,11 @@
         </style>
         <?php
             include "code/algorithms.php";
-            if($_SERVER["REQUEST_METHOD"] == "POST"){ // Check for post
+            if($_SERVER["REQUEST_METHOD"] == "POST"){ // Check for POST
                 if(strcmp($_POST['newPass'], $_POST['confPass']) == 0){ // Ensure they are the same
-                    changePass($_POST['oldPass'],$_POST['newPass']); //change password
+                    echo changePass($_POST['oldPass'],$_POST['newPass']); //change password
                 }else{
-                    displayAlert("Make sure the new and the old password is the same");
+                    echo "Make sure the new and the old password is the same";
                 }
             }
         ?>

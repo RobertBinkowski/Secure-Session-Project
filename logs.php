@@ -6,6 +6,13 @@
         header("Location:dashboard.php");
     }
     include "code/connector.php";
+    if(time() - $_SESSION['oneHourTimeOut'] == 60*60){
+        header("Location:code/logOut.php");
+    }
+    $_SESSION['timeOut'] = time(); // 10 min
+    if(time() - $_SESSION['timeOut'] == 10*60){
+        header("Location:code/logOut.php");
+    }
 ?>
 <!DOCTYPE html>
 <html>

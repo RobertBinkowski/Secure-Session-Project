@@ -1,6 +1,6 @@
 <?php
     session_start();
     session_unset();
-    echo "<script>alert('Successfully Logged Out')</script>";
+    echo "Succesfully Logged Out";
     header("Location:../signIn.php");
 ?>
